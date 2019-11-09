@@ -27,11 +27,9 @@ d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
 d3.csv('./data.csv').then(function(healthData) {
 //Parse data
   healthData.forEach(function(record){
-    record.smokes = +record.smokes;
-    record.age = +record.age;
     record.poverty = +record.poverty;
     record.healthcare = +record.healthcare;
-    record.obesity = +record.obesity;
+    
 });
 
 console.log(healthData);
@@ -40,15 +38,6 @@ var xLinearScale = d3.scaleLinear()
     .domain([d3.min(healthData, d=>d["poverty"]-1),
      d3.max(healthData,d=>d["poverty"])])
     .range([0,width]);
-console.log("x-axis data");
-console.log(d3.min(healthData, d=>d["poverty"]));
-console.log(d3.max(healthData, d=>d["poverty"]));
-console.log("y-axis data");
-console.log(d3.min(healthData, d=>d["healthcare"]));
-console.log(d3.max(healthData, d=>d["healthcare"]));
-    
-console.log(d3.max(healthData, d=>d["obesity"]));
-console.log(d3.min(healthData, d=>d["obesity"]));
 
 var yLinearScale = d3.scaleLinear()
     .domain([d3.min(healthData, d=>d["healthcare"]-1),
@@ -68,19 +57,20 @@ var xAxis = chartGroup.append("g")
 chartGroup.append("g")
 .call(leftAxis);
 
-var gdots =  chartGroup.selectAll("g.dot")
+var circlesGroup =  chartGroup.selectAll("g.circle")
     .data(healthData)
     .enter()
     .append('g');
 //Create & append Circles
-gdots.append("circle")
+circlesGroup.append("circle")
      .attr("cx", d => xLinearScale(d["poverty"]))
       .attr("cy", d => yLinearScale(d["healthcare"]))
       .attr("r", d=>d.obesity / 2)
       .attr("fill", "steelblue")
       .attr("opacity", ".5");
+       
 //Create text labels with state abbreviation for each circle
-gdots.append("text").text(d=>d.abbr)
+circlesGroup.append("text").text(d=>d.abbr)
       .attr("x", d => xLinearScale(d.poverty)-4)
       .attr("y", d => yLinearScale(d.healthcare)+2)
       .style("font-size",".6em")
@@ -90,6 +80,7 @@ console.log(d => yLinearScale(d.healthcare));
 // Create group for  2 x- axis labels
 var labelsGroup = chartGroup.append("g")
 .attr("transform", `translate(${width / 2}, ${height + 20})`);
+
 // Create axes labels
 var healthDataLabel = labelsGroup.append("text")
     .attr("x", 0)
@@ -109,15 +100,3 @@ var healthDataLabel = labelsGroup.append("text")
 }).catch(function(error) {
   console.log(error);
 });
-
-
-
-
-
-
-  
-
-
-
-
-
